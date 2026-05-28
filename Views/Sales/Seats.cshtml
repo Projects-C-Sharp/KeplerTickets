@@ -1,0 +1,516 @@
+@model SeatSelectionViewModel
+@{
+    ViewData["Title"] = "Selección de asientos";
+    var seatsJson = System.Text.Json.JsonSerializer.Serialize(Model.Seats,
+        new System.Text.Json.JsonSerializerOptions { PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase });
+}
+
+<div class="sale-layout">
+    <!-- ─── Left: Seat Map ─────────────────────────────────────────── -->
+    <div class="seat-panel">
+        <div class="panel-header">
+            <a href="/" class="back-link">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+                Volver
+            </a>
+            <div class="showtime-info">
+                <h2>@Model.Showtime.EventName</h2>
+                <span>@Model.Showtime.StartTime.ToString("dddd dd MMMM · HH:mm") — $@Model.Showtime.BasePrice.ToString("N0") c/u</span>
+            </div>
+        </div>
+
+        <!-- Stage indicator -->
+        <div class="stage-area">
+            <div class="stage-arc"></div>
+            <span class="stage-label">ESCENARIO</span>
+        </div>
+
+        <!-- Legend -->
+        <div class="seat-legend">
+            <div class="legend-item"><div class="legend-dot available"></div><span>Disponible</span></div>
+            <div class="legend-item"><div class="legend-dot selected"></div><span>Seleccionado</span></div>
+            <div class="legend-item"><div class="legend-dot reserved"></div><span>Reservado</span></div>
+            <div class="legend-item"><div class="legend-dot occupied"></div><span>Ocupado</span></div>
+        </div>
+
+        <!-- Seat Map -->
+        <div class="seat-map-wrapper">
+            <div class="seat-map" id="seatMap">
+                <!-- Rendered by JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ─── Right: Sale Panel ──────────────────────────────────────── -->
+    <div class="sale-sidebar">
+
+        <!-- Step 1: Customer -->
+        <div class="sale-step" id="step-customer">
+            <div class="step-badge">1</div>
+            <h3 class="step-title">Cliente</h3>
+
+            <div id="customer-found" class="customer-card hidden">
+                <div class="customer-avatar" id="cust-avatar"></div>
+                <div class="customer-info">
+                    <strong id="cust-name"></strong>
+                    <span id="cust-email"></span>
+                    <span id="cust-phone" class="cust-phone"></span>
+                </div>
+                <button class="btn-icon" onclick="clearCustomer()" title="Cambiar cliente">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+            </div>
+
+            <div id="customer-lookup" class="">
+                <div class="search-row">
+                    <input type="email" id="lookup-email" class="field-input"
+                           placeholder="correo@cliente.com" />
+                    <button class="btn-secondary" onclick="lookupCustomer()" id="btn-lookup">
+                        Buscar
+                    </button>
+                </div>
+                <div id="lookup-msg" class="lookup-msg hidden"></div>
+            </div>
+        </div>
+
+        <!-- Step 2: Selection summary -->
+        <div class="sale-step" id="step-seats">
+            <div class="step-badge">2</div>
+            <h3 class="step-title">Asientos seleccionados</h3>
+            <div id="selected-list" class="selected-list">
+                <p class="empty-hint">Haz clic en un asiento disponible</p>
+            </div>
+            <div class="seat-total" id="seat-total" style="display:none">
+                <span>Total a cobrar</span>
+                <strong id="total-amount">$0</strong>
+            </div>
+        </div>
+
+        <!-- Step 3: Payment -->
+        <div class="sale-step" id="step-payment">
+            <div class="step-badge">3</div>
+            <h3 class="step-title">Método de pago</h3>
+            <div class="payment-options">
+                <label class="payment-opt selected" data-method="Cash">
+                    <input type="radio" name="payment" value="Cash" checked hidden/>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>
+                    Efectivo
+                </label>
+                <label class="payment-opt" data-method="Terminal">
+                    <input type="radio" name="payment" value="Terminal" hidden/>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                    Terminal
+                </label>
+                <label class="payment-opt" data-method="Transfer">
+                    <input type="radio" name="payment" value="Transfer" hidden/>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 014-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg>
+                    Transferencia
+                </label>
+            </div>
+        </div>
+
+        <div id="sale-error" class="alert-error hidden"></div>
+
+        <button class="btn-primary btn-full btn-lg" id="btn-checkout" onclick="doCheckout()" disabled>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            Confirmar venta
+        </button>
+
+        <div class="loader hidden" id="loader">
+            <div class="spinner"></div>
+            <span>Procesando...</span>
+        </div>
+    </div>
+</div>
+
+<!-- ─── Customer Register Modal ───────────────────────────────────────────── -->
+<div class="modal-backdrop hidden" id="modal-register">
+    <div class="modal">
+        <div class="modal-header">
+            <h3>Registrar nuevo cliente</h3>
+            <button class="btn-icon" onclick="closeModal()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+        </div>
+        <div class="modal-body">
+            <p class="modal-hint">Este correo no está registrado. Completa los datos para crear el cliente.</p>
+            <div class="field-group">
+                <label class="field-label">Nombre completo *</label>
+                <input type="text" id="reg-name" class="field-input" placeholder="Juan Pérez" />
+            </div>
+            <div class="field-group">
+                <label class="field-label">Correo electrónico *</label>
+                <input type="email" id="reg-email" class="field-input" readonly />
+            </div>
+            <div class="field-group">
+                <label class="field-label">Teléfono <span class="optional">(opcional)</span></label>
+                <input type="tel" id="reg-phone" class="field-input" placeholder="+57 300 000 0000" />
+            </div>
+            <div id="reg-error" class="alert-error hidden"></div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-secondary" onclick="closeModal()">Cancelar</button>
+            <button class="btn-primary" onclick="registerCustomer()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+                Registrar cliente
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ─── Sale Success Modal ────────────────────────────────────────────────── -->
+<div class="modal-backdrop hidden" id="modal-success">
+    <div class="modal modal-success">
+        <div class="success-icon">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <h3>¡Venta completada!</h3>
+        <div id="success-details" class="success-details"></div>
+        <div class="modal-footer modal-footer-center">
+            <button class="btn-secondary" onclick="resendEmail()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22 6 12 13 2 6"/></svg>
+                Reenviar tickets
+            </button>
+            <button class="btn-primary" onclick="window.location.href='/'">
+                Nueva venta
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </button>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+const SHOWTIME_ID   = @Model.Showtime.Id;
+const BASE_PRICE    = @Model.Showtime.BasePrice;
+const ALL_SEATS     = @Html.Raw(seatsJson);
+
+let selectedSeats   = [];   // { id, label, row, number }
+let currentCustomer = null; // CustomerLookupDto
+let currentOrderId  = null;
+
+// ─── Seat Map ───────────────────────────────────────────────────────────────
+function renderSeatMap(seats) {
+    const map = document.getElementById('seatMap');
+    map.innerHTML = '';
+
+    // Group by row
+    const rows = {};
+    seats.forEach(s => {
+        if (!rows[s.row]) rows[s.row] = [];
+        rows[s.row].push(s);
+    });
+
+    const sortedRows = Object.keys(rows).sort();
+    sortedRows.forEach(rowKey => {
+        const rowEl = document.createElement('div');
+        rowEl.className = 'seat-row';
+
+        // Row label
+        const lbl = document.createElement('span');
+        lbl.className = 'row-label';
+        lbl.textContent = rowKey;
+        rowEl.appendChild(lbl);
+
+        const seatsEl = document.createElement('div');
+        seatsEl.className = 'seats-in-row';
+
+        rows[rowKey].sort((a,b) => a.number - b.number).forEach(seat => {
+            const btn = document.createElement('button');
+            btn.className = `seat-btn ${getSeatClass(seat)}`;
+            btn.title = `${seat.label} — ${getSeatStatusLabel(seat.status)}`;
+            btn.dataset.id = seat.id;
+            btn.disabled = seat.status !== 'Available';
+
+            const svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
+            svg.setAttribute('viewBox','0 0 24 24');
+            svg.setAttribute('width','22');
+            svg.setAttribute('height','22');
+            svg.innerHTML = `<path d="M3 9a2 2 0 012-2h14a2 2 0 012 2v3H3V9z" fill="currentColor" opacity=".9"/>
+                <path d="M1 14a2 2 0 012-2h18a2 2 0 012 2v2a1 1 0 01-1 1H2a1 1 0 01-1-1v-2z" fill="currentColor"/>
+                <rect x="6" y="16" width="3" height="3" rx="1" fill="currentColor" opacity=".7"/>
+                <rect x="15" y="16" width="3" height="3" rx="1" fill="currentColor" opacity=".7"/>`;
+            btn.appendChild(svg);
+
+            const numEl = document.createElement('span');
+            numEl.className = 'seat-num';
+            numEl.textContent = seat.number;
+            btn.appendChild(numEl);
+
+            if (seat.status === 'Available') {
+                btn.onclick = () => toggleSeat(seat, btn);
+            }
+
+            seatsEl.appendChild(btn);
+        });
+
+        rowEl.appendChild(seatsEl);
+        map.appendChild(rowEl);
+    });
+}
+
+function getSeatClass(seat) {
+    const isSelected = selectedSeats.some(s => s.id === seat.id);
+    if (isSelected)           return 'seat-selected';
+    switch(seat.status) {
+        case 'Available':     return 'seat-available';
+        case 'Reserved':      return 'seat-reserved';
+        case 'Occupied':      return 'seat-occupied';
+        default:              return 'seat-reserved';
+    }
+}
+
+function getSeatStatusLabel(status) {
+    const map = { Available:'Disponible', Reserved:'Reservado', Occupied:'Ocupado' };
+    return map[status] || status;
+}
+
+function toggleSeat(seat, btn) {
+    const idx = selectedSeats.findIndex(s => s.id === seat.id);
+    if (idx >= 0) {
+        selectedSeats.splice(idx, 1);
+        btn.className = 'seat-btn seat-available';
+    } else {
+        selectedSeats.push(seat);
+        btn.className = 'seat-btn seat-selected';
+    }
+    updateSelectionPanel();
+}
+
+function updateSelectionPanel() {
+    const list  = document.getElementById('selected-list');
+    const total = document.getElementById('seat-total');
+    const amt   = document.getElementById('total-amount');
+    const btn   = document.getElementById('btn-checkout');
+
+    if (selectedSeats.length === 0) {
+        list.innerHTML = '<p class="empty-hint">Haz clic en un asiento disponible</p>';
+        total.style.display = 'none';
+    } else {
+        list.innerHTML = selectedSeats.map(s => `
+            <div class="sel-seat-item">
+                <span class="sel-label">${s.label}</span>
+                <span class="sel-price">$${BASE_PRICE.toLocaleString()}</span>
+                <button class="btn-remove" onclick="removeSeat(${s.id})">✕</button>
+            </div>`).join('');
+        const totalAmt = selectedSeats.length * BASE_PRICE;
+        amt.textContent = '$' + totalAmt.toLocaleString('es-CO');
+        total.style.display = 'flex';
+    }
+
+    btn.disabled = !(currentCustomer && selectedSeats.length > 0);
+}
+
+function removeSeat(id) {
+    selectedSeats = selectedSeats.filter(s => s.id !== id);
+    // Re-render map with updated selection state
+    const btn = document.querySelector(`[data-id="${id}"]`);
+    if (btn) btn.className = 'seat-btn seat-available';
+    updateSelectionPanel();
+}
+
+// ─── Customer Lookup ─────────────────────────────────────────────────────────
+async function lookupCustomer() {
+    const email = document.getElementById('lookup-email').value.trim();
+    if (!email) return;
+
+    const msg = document.getElementById('lookup-msg');
+    msg.className = 'lookup-msg';
+    msg.textContent = 'Buscando...';
+
+    try {
+        const res = await fetch(`/Sales/LookupCustomer?email=${encodeURIComponent(email)}`);
+        if (res.ok) {
+            const customer = await res.json();
+            setCustomer(customer);
+        } else {
+            // Not found — open register modal
+            msg.className = 'lookup-msg msg-warning';
+            msg.textContent = 'Cliente no encontrado. Puedes registrarlo.';
+            openRegisterModal(email);
+        }
+    } catch {
+        msg.className = 'lookup-msg msg-error';
+        msg.textContent = 'Error de conexión';
+    }
+}
+
+function setCustomer(customer) {
+    currentCustomer = customer;
+    document.getElementById('customer-lookup').classList.add('hidden');
+    document.getElementById('customer-found').classList.remove('hidden');
+
+    const initials = customer.fullName.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase();
+    document.getElementById('cust-avatar').textContent  = initials;
+    document.getElementById('cust-name').textContent    = customer.fullName;
+    document.getElementById('cust-email').textContent   = customer.email;
+    const ph = document.getElementById('cust-phone');
+    ph.textContent = customer.phone || '';
+    ph.style.display = customer.phone ? 'block' : 'none';
+
+    document.getElementById('lookup-msg').className = 'lookup-msg hidden';
+    updateSelectionPanel();
+}
+
+function clearCustomer() {
+    currentCustomer = null;
+    document.getElementById('customer-found').classList.add('hidden');
+    document.getElementById('customer-lookup').classList.remove('hidden');
+    document.getElementById('lookup-email').value = '';
+    document.getElementById('lookup-msg').className = 'lookup-msg hidden';
+    updateSelectionPanel();
+}
+
+// ─── Register Modal ───────────────────────────────────────────────────────────
+function openRegisterModal(email) {
+    document.getElementById('reg-email').value = email;
+    document.getElementById('reg-name').value  = '';
+    document.getElementById('reg-phone').value = '';
+    document.getElementById('reg-error').classList.add('hidden');
+    document.getElementById('modal-register').classList.remove('hidden');
+}
+
+function closeModal() {
+    document.getElementById('modal-register').classList.add('hidden');
+}
+
+async function registerCustomer() {
+    const name  = document.getElementById('reg-name').value.trim();
+    const email = document.getElementById('reg-email').value.trim();
+    const phone = document.getElementById('reg-phone').value.trim();
+    const errEl = document.getElementById('reg-error');
+
+    if (!name) { errEl.textContent = 'El nombre es obligatorio'; errEl.classList.remove('hidden'); return; }
+
+    try {
+        const res = await fetch('/Sales/RegisterCustomer', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json',
+                       'RequestVerificationToken': getToken() },
+            body: JSON.stringify({ fullName: name, email, phone: phone || null })
+        });
+        if (res.ok) {
+            const customer = await res.json();
+            closeModal();
+            setCustomer(customer);
+        } else {
+            errEl.textContent = 'Error al registrar. El correo puede estar en uso.';
+            errEl.classList.remove('hidden');
+        }
+    } catch {
+        errEl.textContent = 'Error de conexión';
+        errEl.classList.remove('hidden');
+    }
+}
+
+// ─── Payment method ────────────────────────────────────────────────────────
+document.querySelectorAll('.payment-opt').forEach(opt => {
+    opt.addEventListener('click', function() {
+        document.querySelectorAll('.payment-opt').forEach(o => o.classList.remove('selected'));
+        this.classList.add('selected');
+        this.querySelector('input').checked = true;
+    });
+});
+
+function getPaymentMethod() {
+    const sel = document.querySelector('.payment-opt.selected input');
+    return sel ? sel.value : 'Cash';
+}
+
+// ─── Checkout ─────────────────────────────────────────────────────────────────
+async function doCheckout() {
+    if (!currentCustomer || selectedSeats.length === 0) return;
+
+    setLoading(true);
+    const errEl = document.getElementById('sale-error');
+    errEl.classList.add('hidden');
+
+    // Step 1: Reserve
+    try {
+        const resRes = await fetch('/Sales/Reserve', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'RequestVerificationToken': getToken() },
+            body: JSON.stringify({
+                customerUserId: currentCustomer.userId,
+                showtimeId: SHOWTIME_ID,
+                seatIds: selectedSeats.map(s => s.id)
+            })
+        });
+
+        if (!resRes.ok) {
+            const err = await resRes.json();
+            throw new Error(err.message || 'Error al reservar asientos');
+        }
+
+        // Step 2: Checkout
+        const chkRes = await fetch('/Sales/Checkout', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'RequestVerificationToken': getToken() },
+            body: JSON.stringify({
+                customerUserId: currentCustomer.userId,
+                seatIds: selectedSeats.map(s => s.id),
+                paymentMethod: getPaymentMethod()
+            })
+        });
+
+        if (!chkRes.ok) {
+            const err = await chkRes.json();
+            throw new Error(err.message || 'Error al procesar la venta');
+        }
+
+        const sale = await chkRes.json();
+        currentOrderId = sale.orderId;
+        showSuccessModal(sale);
+
+    } catch(e) {
+        errEl.textContent = e.message;
+        errEl.classList.remove('hidden');
+    } finally {
+        setLoading(false);
+    }
+}
+
+function showSuccessModal(sale) {
+    const details = document.getElementById('success-details');
+    details.innerHTML = `
+        <div class="success-row"><span>Cliente</span><strong>${sale.customerName}</strong></div>
+        <div class="success-row"><span>Correo</span><strong>${sale.customerEmail}</strong></div>
+        <div class="success-row"><span>Tickets</span><strong>${sale.tickets.length} asiento(s)</strong></div>
+        <div class="success-row"><span>Total cobrado</span><strong>$${sale.amountPaid.toLocaleString('es-CO')}</strong></div>
+        <div class="success-row"><span>Pago</span><strong>${sale.paymentMethod}</strong></div>
+        <div class="success-row"><span>Orden #</span><strong>${sale.orderId}</strong></div>
+        <div class="ticket-list">${sale.tickets.map(t => `
+            <div class="ticket-item">
+                ${t.qrImageUrl ? `<img src="${t.qrImageUrl}" class="qr-thumb" alt="QR"/>` : ''}
+                <span>${t.seatLabel}</span>
+            </div>`).join('')}
+        </div>`;
+    document.getElementById('modal-success').classList.remove('hidden');
+}
+
+async function resendEmail() {
+    if (!currentOrderId) return;
+    try {
+        await fetch(`/Sales/ResendEmail?orderId=${currentOrderId}`, {
+            method: 'POST',
+            headers: { 'RequestVerificationToken': getToken() }
+        });
+        alert('Tickets reenviados exitosamente');
+    } catch { alert('Error al reenviar'); }
+}
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+function setLoading(on) {
+    document.getElementById('loader').classList.toggle('hidden', !on);
+    document.getElementById('btn-checkout').disabled = on;
+}
+
+function getToken() {
+    return document.querySelector('input[name="__RequestVerificationToken"]')?.value || '';
+}
+
+// ─── Init ─────────────────────────────────────────────────────────────────────
+renderSeatMap(ALL_SEATS);
+</script>
+@Html.AntiForgeryToken()
+}

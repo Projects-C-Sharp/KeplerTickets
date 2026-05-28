@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] — Kepler Tickets</title>
+    <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    @if (Context.Session.GetString("AccessToken") != null)
+    {
+        <header class="topbar">
+            <div class="topbar-inner">
+                <a class="brand" href="/">
+                    <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+                        <circle cx="14" cy="14" r="14" fill="#FD7B41"/>
+                        <path d="M8 14L13 9L18 14L13 19L8 14Z" fill="white"/>
+                        <circle cx="19" cy="14" r="3" fill="white"/>
+                    </svg>
+                    <span>Kepler <strong>Tickets</strong></span>
+                </a>
+                <nav class="topbar-nav">
+                    <a href="/" class="nav-link @(Context.Request.Path == "/" ? "active" : "")">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                        Inicio
+                    </a>
+                </nav>
+                <div class="topbar-user">
+                    <div class="user-badge">
+                        <span class="user-role @Context.Session.GetString("UserRole")?.ToLower()">
+                            @Context.Session.GetString("UserRole")
+                        </span>
+                        <span class="user-name">@Context.Session.GetString("UserName")</span>
+                    </div>
+                    <a href="/Account/Logout" class="btn-logout">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                        Salir
+                    </a>
+                </div>
+            </div>
+        </header>
+    }
+
+    <main class="@(Context.Session.GetString("AccessToken") != null ? "main-content" : "")">
+        @RenderBody()
+    </main>
+
+    <script src="~/js/site.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

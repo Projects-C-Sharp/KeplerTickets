@@ -1,0 +1,86 @@
+@model LoginViewModel
+@{
+    Layout = null;
+    ViewData["Title"] = "Iniciar Sesión";
+}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Kepler Tickets — Acceso</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/site.css"/>
+</head>
+<body class="login-body">
+    <div class="login-wrapper">
+        <div class="login-panel">
+            <div class="login-logo">
+                <svg width="52" height="52" viewBox="0 0 52 52" fill="none">
+                    <circle cx="26" cy="26" r="26" fill="#FD7B41"/>
+                    <path d="M14 26L24 16L34 26L24 36L14 26Z" fill="white"/>
+                    <circle cx="36" cy="26" r="6" fill="white"/>
+                </svg>
+                <div>
+                    <h1 class="login-brand">Kepler Tickets</h1>
+                    <p class="login-subtitle">Módulo de recepción</p>
+                </div>
+            </div>
+
+            @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+            {
+                <div class="alert-error">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    @Model.ErrorMessage
+                </div>
+            }
+
+            <form asp-action="Login" asp-controller="Account" method="post" class="login-form">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="returnUrl" value="@ViewBag.ReturnUrl" />
+
+                <div class="field-group">
+                    <label asp-for="Email" class="field-label">Correo electrónico</label>
+                    <input asp-for="Email" type="email" class="field-input"
+                           placeholder="recepcion@kepler.com" autocomplete="email" autofocus />
+                    <span asp-validation-for="Email" class="field-error"></span>
+                </div>
+
+                <div class="field-group">
+                    <label asp-for="Password" class="field-label">Contraseña</label>
+                    <div class="input-with-toggle">
+                        <input asp-for="Password" type="password" class="field-input"
+                               placeholder="••••••••" autocomplete="current-password" id="pwd-input"/>
+                        <button type="button" class="toggle-pwd" onclick="togglePwd()">
+                            <svg id="eye-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                        </button>
+                    </div>
+                    <span asp-validation-for="Password" class="field-error"></span>
+                </div>
+
+                <button type="submit" class="btn-primary btn-full">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+                    Ingresar
+                </button>
+            </form>
+
+            <p class="login-footer">Solo recepcionistas y administradores tienen acceso</p>
+        </div>
+
+        <div class="login-deco">
+            <div class="deco-circle deco-1"></div>
+            <div class="deco-circle deco-2"></div>
+            <div class="deco-circle deco-3"></div>
+        </div>
+    </div>
+
+    <link rel="stylesheet" href="~/css/site.css" />
+    <script>
+        function togglePwd() {
+            const inp = document.getElementById('pwd-input');
+            inp.type = inp.type === 'password' ? 'text' : 'password';
+        }
+    </script>
+</body>
+</html>
