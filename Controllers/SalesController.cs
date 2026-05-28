@@ -96,7 +96,13 @@ public class SalesController : Controller
     {
         if (!IsAuthenticated) return Unauthorized();
         var seats = await _api.GetShowtimeSeatsAsync(showtimeId);
-        return Json(seats);
+        // Normalizar enums (int) a strings para el JS del cliente
+        return Json(seats.Select(s => new {
+            s.Id, s.Row, s.Number, s.Label,
+            Type   = s.TypeLabel,
+            Status = s.StatusLabel,
+            s.ReservedUntil
+        }));
     }
 
     public IActionResult Confirmation(int orderId)

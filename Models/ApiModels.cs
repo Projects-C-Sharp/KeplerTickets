@@ -24,6 +24,29 @@ public class LoginRequest
     public string Password { get; set; } = "";
 }
 
+/// <summary>
+/// Respuesta directa de POST /api/auth/login
+/// (sin wrapper ApiResponse, solo { accessToken, refreshToken })
+/// </summary>
+public class LoginTokenResponse
+{
+    public string AccessToken  { get; set; } = "";
+    public string RefreshToken { get; set; } = "";
+}
+
+/// <summary>
+/// Respuesta de GET /api/auth/me (envuelta en ApiResponse)
+/// </summary>
+public class UserProfileDto
+{
+    public string  FullName { get; set; } = "";
+    public string  Email    { get; set; } = "";
+    public string? PhotoUrl { get; set; }
+}
+
+/// <summary>
+/// Modelo interno que combina tokens + perfil para la sesión
+/// </summary>
 public class LoginResult
 {
     public string AccessToken  { get; set; } = "";
@@ -34,17 +57,35 @@ public class LoginResult
 }
 
 // ── Events ────────────────────────────────────────────────────────────────────
+// EventType: Movie=0, Concert=1, Theater=2, Sports=3, Other=4
 public class EventDto
 {
-    public int     Id          { get; set; }
-    public string  Name        { get; set; } = "";
-    public string  Description { get; set; } = "";
-    public string  Type        { get; set; } = "";
-    public string? ImageUrl    { get; set; }
-    public string? VenueName   { get; set; }
+    public int      Id              { get; set; }
+    public string   Name            { get; set; } = "";
+    public string   Description     { get; set; } = "";
+    public int      Type            { get; set; }   // API devuelve int
+    public string?  PosterUrl       { get; set; }   // antes ImageUrl
+    public string?  VenueName       { get; set; }
+    public string?  VenueCity       { get; set; }
+    public int      DurationMinutes { get; set; }
+    public bool     IsActive        { get; set; }
+    public DateTime CreatedAt       { get; set; }
+
+    // Helpers para las vistas
+    public string? ImageUrl   => PosterUrl;         // alias de compatibilidad
+    public string  TypeLabel  => Type switch
+    {
+        0 => "Movie",
+        1 => "Concert",
+        2 => "Theater",
+        3 => "Sports",
+        4 => "Other",
+        _ => "Other"
+    };
 }
 
 // ── Showtimes ─────────────────────────────────────────────────────────────────
+// ShowtimeStatus: Active=0, Cancelled=1, Completed=2, SoldOut=3
 public class ShowtimeDto
 {
     public int      Id             { get; set; }
@@ -53,21 +94,49 @@ public class ShowtimeDto
     public DateTime StartTime      { get; set; }
     public DateTime EndTime        { get; set; }
     public decimal  BasePrice      { get; set; }
-    public string   Status         { get; set; } = "";
+    public int      Status         { get; set; }   // API devuelve int
     public int      AvailableSeats { get; set; }
     public int      TotalSeats     { get; set; }
+
+    // Helper para las vistas
+    public string StatusLabel => Status switch
+    {
+        0 => "Active",
+        1 => "Cancelled",
+        2 => "Completed",
+        3 => "SoldOut",
+        _ => "Unknown"
+    };
 }
 
 // ── Seats ─────────────────────────────────────────────────────────────────────
+// SeatStatus: Available=0, Reserved=1, Sold=2
+// SeatType:   Standard=0, Premium=1,   VIP=2
 public class SeatDto
 {
-    public int      Id            { get; set; }
-    public string   Row           { get; set; } = "";
-    public int      Number        { get; set; }
-    public string   Label         { get; set; } = "";
-    public string   Type          { get; set; } = "";
-    public string   Status        { get; set; } = "";
+    public int       Id            { get; set; }
+    public string    Row           { get; set; } = "";
+    public int       Number        { get; set; }
+    public string    Label         { get; set; } = "";
+    public int       Type          { get; set; }   // API devuelve int
+    public int       Status        { get; set; }   // API devuelve int
     public DateTime? ReservedUntil { get; set; }
+
+    public string StatusLabel => Status switch
+    {
+        0 => "Available",
+        1 => "Reserved",
+        2 => "Sold",
+        _ => "Reserved"
+    };
+
+    public string TypeLabel => Type switch
+    {
+        0 => "Standard",
+        1 => "Premium",
+        2 => "VIP",
+        _ => "Standard"
+    };
 }
 
 // ── Customers ─────────────────────────────────────────────────────────────────
@@ -77,6 +146,7 @@ public class CustomerLookupDto
     public string  FullName { get; set; } = "";
     public string  Email    { get; set; } = "";
     public string? Phone    { get; set; }
+    public string? PhotoUrl { get; set; }
     public bool    IsActive { get; set; }
     public bool    IsNew    { get; set; }
 }

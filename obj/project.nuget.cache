@@ -1,11 +1,19 @@
 {
   "version": 2,
-  "dgSpecHash": "qnWGDAnYNH4=",
+  "dgSpecHash": "0mIcXT8GPUs=",
   "success": true,
   "projectFilePath": "/home/cohorte6/Escritorio/c#/KeplerTickets/KeplerTickets.csproj",
   "expectedPackageFiles": [
+    "/home/cohorte6/.nuget/packages/microsoft.aspnetcore.authentication.jwtbearer/9.0.0/microsoft.aspnetcore.authentication.jwtbearer.9.0.0.nupkg.sha512",
     "/home/cohorte6/.nuget/packages/microsoft.aspnetcore.openapi/10.0.8/microsoft.aspnetcore.openapi.10.0.8.nupkg.sha512",
-    "/home/cohorte6/.nuget/packages/microsoft.openapi/2.0.0/microsoft.openapi.2.0.0.nupkg.sha512"
+    "/home/cohorte6/.nuget/packages/microsoft.identitymodel.abstractions/8.18.0/microsoft.identitymodel.abstractions.8.18.0.nupkg.sha512",
+    "/home/cohorte6/.nuget/packages/microsoft.identitymodel.jsonwebtokens/8.18.0/microsoft.identitymodel.jsonwebtokens.8.18.0.nupkg.sha512",
+    "/home/cohorte6/.nuget/packages/microsoft.identitymodel.logging/8.18.0/microsoft.identitymodel.logging.8.18.0.nupkg.sha512",
+    "/home/cohorte6/.nuget/packages/microsoft.identitymodel.protocols/8.0.1/microsoft.identitymodel.protocols.8.0.1.nupkg.sha512",
+    "/home/cohorte6/.nuget/packages/microsoft.identitymodel.protocols.openidconnect/8.0.1/microsoft.identitymodel.protocols.openidconnect.8.0.1.nupkg.sha512",
+    "/home/cohorte6/.nuget/packages/microsoft.identitymodel.tokens/8.18.0/microsoft.identitymodel.tokens.8.18.0.nupkg.sha512",
+    "/home/cohorte6/.nuget/packages/microsoft.openapi/2.0.0/microsoft.openapi.2.0.0.nupkg.sha512",
+    "/home/cohorte6/.nuget/packages/system.identitymodel.tokens.jwt/8.18.0/system.identitymodel.tokens.jwt.8.18.0.nupkg.sha512"
   ],
   "logs": []
 }

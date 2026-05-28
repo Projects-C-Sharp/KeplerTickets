@@ -36,3 +36,12 @@
 /home/cohorte6/Escritorio/c#/KeplerTickets/obj/Debug/net10.0/KeplerTickets.pdb
 /home/cohorte6/Escritorio/c#/KeplerTickets/obj/Debug/net10.0/KeplerTickets.genruntimeconfig.cache
 /home/cohorte6/Escritorio/c#/KeplerTickets/obj/Debug/net10.0/ref/KeplerTickets.dll
+/home/cohorte6/Escritorio/c#/KeplerTickets/obj/Debug/net10.0/KeplerTickets.sourcelink.json
+/home/cohorte6/Escritorio/c#/KeplerTickets/bin/Debug/net10.0/Microsoft.AspNetCore.Authentication.JwtBearer.dll
+/home/cohorte6/Escritorio/c#/KeplerTickets/bin/Debug/net10.0/Microsoft.IdentityModel.Abstractions.dll
+/home/cohorte6/Escritorio/c#/KeplerTickets/bin/Debug/net10.0/Microsoft.IdentityModel.JsonWebTokens.dll
+/home/cohorte6/Escritorio/c#/KeplerTickets/bin/Debug/net10.0/Microsoft.IdentityModel.Logging.dll
+/home/cohorte6/Escritorio/c#/KeplerTickets/bin/Debug/net10.0/Microsoft.IdentityModel.Protocols.dll
+/home/cohorte6/Escritorio/c#/KeplerTickets/bin/Debug/net10.0/Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
+/home/cohorte6/Escritorio/c#/KeplerTickets/bin/Debug/net10.0/Microsoft.IdentityModel.Tokens.dll
+/home/cohorte6/Escritorio/c#/KeplerTickets/bin/Debug/net10.0/System.IdentityModel.Tokens.Jwt.dll

@@ -18,9 +18,10 @@ public class HomeController : Controller
         var showtimes = await _api.GetShowtimesAsync(eventId);
         var events    = await _api.GetEventsAsync();
 
-        // Only show active showtimes
+        // Solo mostrar funciones activas (Active=0) y agotadas (SoldOut=3)
+        // Excluir Cancelled=1 y Completed=2
         showtimes = showtimes
-            .Where(s => s.Status == "Active" || s.Status == "Scheduled")
+            .Where(s => s.Status == 0 || s.Status == 3)
             .OrderBy(s => s.StartTime)
             .ToList();
 

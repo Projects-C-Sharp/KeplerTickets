@@ -1,4 +1,6 @@
+using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http.Headers;
+using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -31,6 +33,34 @@ public class ApiService : IApiService
                 new AuthenticationHeaderValue("Bearer", token);
     }
 
+    /// <summary>
+    /// Extrae el rol del claim "role" dentro del JWT sin llamar a la API.
+    /// </summary>
+    private static string ExtractRoleFromJwt(string accessToken)
+    {
+        try
+        {
+            var handler = new JwtSecurityTokenHandler();
+            var jwt     = handler.ReadJwtToken(accessToken);
+
+            // ASP.NET Identity usa ClaimTypes.Role que serializa como URI largo:
+            // "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
+            // JwtSecurityTokenHandler también lo mapea al alias corto "role"
+            // → buscamos ambos para cubrir cualquier variante.
+            var role = jwt.Claims.FirstOrDefault(c =>
+                    c.Type == ClaimTypes.Role ||
+                    c.Type == "role" ||
+                    c.Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/role")
+                ?.Value ?? "";
+
+            return role;
+        }
+        catch
+        {
+            return "";
+        }
+    }
+
     private async Task<T?> GetAsync<T>(string path)
     {
         SetAuth();
@@ -55,22 +85,47 @@ public class ApiService : IApiService
     }
 
     // ── Auth ──────────────────────────────────────────────────────────────────
+
+    /// <summary>
+    /// POST /api/auth/login devuelve { accessToken, refreshToken } sin wrapper.
+    /// Luego llama a GET /api/auth/me (con el token) para obtener perfil.
+    /// El rol se extrae del JWT para evitar una llamada extra.
+    /// </summary>
     public async Task<LoginResult?> LoginAsync(LoginRequest request)
     {
         var content = new StringContent(
             JsonSerializer.Serialize(request, _json),
             Encoding.UTF8, "application/json");
-        var res  = await _http.PostAsync("api/auth/login", content);
+
+        var res = await _http.PostAsync("api/auth/login", content);
         if (!res.IsSuccessStatusCode) return null;
-        var body = await res.Content.ReadAsStringAsync();
-        var wrap = JsonSerializer.Deserialize<ApiResponse<LoginResult>>(body, _json);
-        return wrap is { Success: true } ? wrap.Data : null;
+
+        var body   = await res.Content.ReadAsStringAsync();
+        var tokens = JsonSerializer.Deserialize<LoginTokenResponse>(body, _json);
+        if (tokens == null || string.IsNullOrEmpty(tokens.AccessToken)) return null;
+
+        // Extraer rol del JWT (claim "role")
+        var role = ExtractRoleFromJwt(tokens.AccessToken);
+
+        // Obtener perfil del usuario autenticado
+        _http.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue("Bearer", tokens.AccessToken);
+
+        var profileWrap = await GetAsync<UserProfileDto>("api/auth/me");
+
+        return new LoginResult
+        {
+            AccessToken  = tokens.AccessToken,
+            RefreshToken = tokens.RefreshToken,
+            Role         = role,
+            FullName     = profileWrap?.FullName ?? "",
+            Email        = profileWrap?.Email    ?? request.Email
+        };
     }
 
     // ── Events ────────────────────────────────────────────────────────────────
     public async Task<List<EventDto>> GetEventsAsync()
     {
-        SetAuth();
         var paged = await GetAsync<PagedResult<EventDto>>("api/events?page=1&pageSize=100");
         return paged?.Items ?? new();
     }
@@ -78,8 +133,7 @@ public class ApiService : IApiService
     // ── Showtimes ─────────────────────────────────────────────────────────────
     public async Task<List<ShowtimeDto>> GetShowtimesAsync(int? eventId = null)
     {
-        SetAuth();
-        var url   = eventId.HasValue
+        var url = eventId.HasValue
             ? $"api/showtimes?page=1&pageSize=50&eventId={eventId}"
             : "api/showtimes?page=1&pageSize=50";
         var paged = await GetAsync<PagedResult<ShowtimeDto>>(url);
@@ -91,7 +145,6 @@ public class ApiService : IApiService
 
     public async Task<List<SeatDto>> GetShowtimeSeatsAsync(int showtimeId)
     {
-        SetAuth();
         var seats = await GetAsync<List<SeatDto>>($"api/showtimes/{showtimeId}/seats");
         return seats ?? new();
     }
@@ -99,7 +152,6 @@ public class ApiService : IApiService
     // ── Customers ─────────────────────────────────────────────────────────────
     public async Task<CustomerLookupDto?> LookupCustomerAsync(string email)
     {
-        SetAuth();
         var enc = Uri.EscapeDataString(email);
         return await GetAsync<CustomerLookupDto>($"api/receptionist/customers/lookup?email={enc}");
     }

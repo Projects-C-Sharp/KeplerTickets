@@ -68,7 +68,8 @@ docker run -p 8080:8080 \
 
 | Método | Endpoint | Uso |
 |--------|----------|-----|
-| POST | `/api/auth/login` | Login |
+| POST | `/api/auth/login` | Login → devuelve `{ accessToken, refreshToken }` |
+| GET | `/api/auth/me` | Perfil del usuario (FullName, Email) |
 | GET | `/api/events` | Listar eventos |
 | GET | `/api/showtimes` | Listar funciones |
 | GET | `/api/showtimes/{id}` | Detalle función |

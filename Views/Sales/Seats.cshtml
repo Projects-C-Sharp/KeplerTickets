@@ -1,7 +1,14 @@
+
 @model SeatSelectionViewModel
 @{
     ViewData["Title"] = "Selección de asientos";
-    var seatsJson = System.Text.Json.JsonSerializer.Serialize(Model.Seats,
+    // Normalizar Status (int) a string para el JS del cliente
+    var seatsForJs = Model.Seats.Select(s => new {
+        id = s.Id, row = s.Row, number = s.Number, label = s.Label, type = s.TypeLabel,
+        status = s.StatusLabel,
+        reservedUntil = s.ReservedUntil
+    });
+    var seatsJson = System.Text.Json.JsonSerializer.Serialize(seatsForJs,
         new System.Text.Json.JsonSerializerOptions { PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase });
 }
 

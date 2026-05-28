@@ -1,3 +1,4 @@
+
 @model ShowtimeSelectionViewModel
 @{
     ViewData["Title"] = "Funciones disponibles";
@@ -44,7 +45,7 @@ else
 
             <div class="showtime-card @urgency">
                 <div class="card-top">
-                    <span class="event-tag">@show.Status</span>
+                    <span class="event-tag">@show.StatusLabel</span>
                     <span class="event-price">$@show.BasePrice.ToString("N0")</span>
                 </div>
                 <h3 class="card-title">@show.EventName</h3>
