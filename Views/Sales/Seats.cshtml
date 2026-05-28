@@ -1,8 +1,8 @@
-
 @model SeatSelectionViewModel
+@using System.Globalization
 @{
     ViewData["Title"] = "Selección de asientos";
-    // Normalizar Status (int) a string para el JS del cliente
+    // Normalizar Status/Type (int) a string para el JS del cliente
     var seatsForJs = Model.Seats.Select(s => new {
         id = s.Id, row = s.Row, number = s.Number, label = s.Label, type = s.TypeLabel,
         status = s.StatusLabel,
@@ -10,6 +10,8 @@
     });
     var seatsJson = System.Text.Json.JsonSerializer.Serialize(seatsForJs,
         new System.Text.Json.JsonSerializerOptions { PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase });
+    // Usar InvariantCulture para que el decimal siempre use punto (evita "Unexpected number" en JS)
+    var basePriceJs = Model.Showtime.BasePrice.ToString("G", CultureInfo.InvariantCulture);
 }
 
 <div class="sale-layout">
@@ -189,7 +191,7 @@
 @section Scripts {
 <script>
 const SHOWTIME_ID   = @Model.Showtime.Id;
-const BASE_PRICE    = @Model.Showtime.BasePrice;
+const BASE_PRICE    = @Html.Raw(basePriceJs);
 const ALL_SEATS     = @Html.Raw(seatsJson);
 
 let selectedSeats   = [];   // { id, label, row, number }
