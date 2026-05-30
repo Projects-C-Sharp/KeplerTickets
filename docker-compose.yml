@@ -1,0 +1,21 @@
+# ─────────────────────────────────────────
+# API — ASP.NET Core 10
+# ─────────────────────────────────────────
+version: '3.9'
+  
+services:
+  admin-tickets:
+    container_name: tickets-recep
+      
+    build:
+      context: .
+      dockerfile: Dockerfile
+      
+    image: tickets-recep:latest
+      
+    ports:
+      - "5206:8080"
+      
+    restart: unless-stopped
+
+

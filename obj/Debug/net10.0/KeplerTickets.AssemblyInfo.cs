@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("KeplerTickets")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5a69bf9f68590f7d8b146a3449ad5aa2ab259bb1")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8adf0baed1645ad4650da42396be037e3011c055")]
 [assembly: System.Reflection.AssemblyProductAttribute("KeplerTickets")]
 [assembly: System.Reflection.AssemblyTitleAttribute("KeplerTickets")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

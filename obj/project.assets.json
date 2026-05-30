@@ -412,11 +412,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/home/cohorte6/Escritorio/c#/KeplerTickets/KeplerTickets.csproj",
+      "projectUniqueName": "/home/cohorte6/Escritorio/c#/access/KeplerTickets/KeplerTickets.csproj",
       "projectName": "KeplerTickets",
-      "projectPath": "/home/cohorte6/Escritorio/c#/KeplerTickets/KeplerTickets.csproj",
+      "projectPath": "/home/cohorte6/Escritorio/c#/access/KeplerTickets/KeplerTickets.csproj",
       "packagesPath": "/home/cohorte6/.nuget/packages/",
-      "outputPath": "/home/cohorte6/Escritorio/c#/KeplerTickets/obj/",
+      "outputPath": "/home/cohorte6/Escritorio/c#/access/KeplerTickets/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/home/cohorte6/.nuget/NuGet/NuGet.Config"

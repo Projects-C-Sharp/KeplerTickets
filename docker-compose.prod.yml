@@ -1,0 +1,23 @@
+# ─────────────────────────────────────────
+# API — ASP.NET Core 10 - PRODUCTION
+# ─────────────────────────────────────────
+version: '3.9'
+  
+services:
+  admin-tickets:
+    container_name: tickets-recep
+      
+    build:
+      context: .
+      dockerfile: Dockerfile
+      
+    image: ${DOCKER_USER}/tickets-recep:latest
+      
+    ports:
+      - "5206:8080"
+      
+    restart: unless-stopped
+      
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ApiBase: "https://api.kepler.andrescortes.dev"
