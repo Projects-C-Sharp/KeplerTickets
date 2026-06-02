@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/home/cohorte6/Escritorio/c#/access/KeplerTickets/KeplerTickets.csproj": {}
+    "/home/cohorte6/Escritorio/c#/KeplerTickets/KeplerTickets.csproj": {}
   },
   "projects": {
-    "/home/cohorte6/Escritorio/c#/access/KeplerTickets/KeplerTickets.csproj": {
+    "/home/cohorte6/Escritorio/c#/KeplerTickets/KeplerTickets.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/cohorte6/Escritorio/c#/access/KeplerTickets/KeplerTickets.csproj",
+        "projectUniqueName": "/home/cohorte6/Escritorio/c#/KeplerTickets/KeplerTickets.csproj",
         "projectName": "KeplerTickets",
-        "projectPath": "/home/cohorte6/Escritorio/c#/access/KeplerTickets/KeplerTickets.csproj",
+        "projectPath": "/home/cohorte6/Escritorio/c#/KeplerTickets/KeplerTickets.csproj",
         "packagesPath": "/home/cohorte6/.nuget/packages/",
-        "outputPath": "/home/cohorte6/Escritorio/c#/access/KeplerTickets/obj/",
+        "outputPath": "/home/cohorte6/Escritorio/c#/KeplerTickets/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/home/cohorte6/.nuget/NuGet/NuGet.Config"

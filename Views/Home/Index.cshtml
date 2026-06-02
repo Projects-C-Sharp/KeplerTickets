@@ -1,4 +1,3 @@
-
 @model ShowtimeSelectionViewModel
 @{
     ViewData["Title"] = "Funciones disponibles";
@@ -35,47 +34,89 @@
 }
 else
 {
-    <div class="showtime-grid">
-        @foreach (var show in Model.Showtimes)
-        {
-            var pct = show.TotalSeats > 0
-                ? (int)((show.TotalSeats - show.AvailableSeats) * 100.0 / show.TotalSeats)
-                : 0;
-            var urgency = show.AvailableSeats < 10 ? "urgent" : show.AvailableSeats < 30 ? "low" : "";
+    @foreach (var group in Model.GroupedByEvent)
+    {
+        <div class="event-group">
+            <div class="event-group-header">
+                <span class="event-group-title">@group.Key</span>
+                <span class="event-group-count">@group.Count() función@(group.Count() != 1 ? "es" : "")</span>
+            </div>
 
-            <div class="showtime-card @urgency">
-                <div class="card-top">
-                    <span class="event-tag">@show.StatusLabel</span>
-                    <span class="event-price">$@show.BasePrice.ToString("N0")</span>
-                </div>
-                <h3 class="card-title">@show.EventName</h3>
-                <div class="card-time">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                    @show.StartTime.ToString("ddd dd MMM · HH:mm")
-                </div>
-
-                <div class="seat-progress">
-                    <div class="progress-labels">
-                        <span>Disponibles</span>
-                        <span class="@urgency">@show.AvailableSeats / @show.TotalSeats</span>
-                    </div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width:@pct%"></div>
-                    </div>
-                </div>
-
-                @if (show.AvailableSeats > 0)
+            <div class="showtime-grid">
+                @foreach (var show in group)
                 {
-                    <a href="/Sales/Seats?showtimeId=@show.Id" class="btn-primary btn-card">
-                        Seleccionar asientos
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-                    </a>
-                }
-                else
-                {
-                    <button class="btn-disabled btn-card" disabled>Agotado</button>
+                    var pct = show.TotalSeats > 0
+                        ? (int)((show.TotalSeats - show.AvailableSeats) * 100.0 / show.TotalSeats)
+                        : 0;
+                    var urgency  = show.AvailableSeats < 10 ? "urgent" : show.AvailableSeats < 30 ? "low" : "";
+                    var isPast   = show.IsPastOrOngoing;
+                    var cardExtra = isPast ? "past" : urgency;
+
+                    <div class="showtime-card @cardExtra">
+                        <div class="card-top">
+                            @if (show.IsOngoing)
+                            {
+                                <span class="event-tag tag-ongoing">
+                                    <span class="pulse-dot"></span> En curso
+                                </span>
+                            }
+                            else if (show.IsFinished)
+                            {
+                                <span class="event-tag tag-past">Ya ocurrió</span>
+                            }
+                            else
+                            {
+                                <span class="event-tag">@show.StatusLabel</span>
+                            }
+                            <span class="event-price @(isPast ? "price-muted" : "")">$@show.BasePrice.ToString("N0")</span>
+                        </div>
+
+                        <div class="card-time">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                            @show.StartTime.ToString("ddd dd MMM · HH:mm")
+                        </div>
+
+                        @if (!isPast)
+                        {
+                            <div class="seat-progress">
+                                <div class="progress-labels">
+                                    <span>Disponibles</span>
+                                    <span class="@urgency">@show.AvailableSeats / @show.TotalSeats</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width:@pct%"></div>
+                                </div>
+                            </div>
+                        }
+
+                        @if (show.IsOngoing)
+                        {
+                            <button class="btn-state btn-ongoing" disabled>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                                Función en curso
+                            </button>
+                        }
+                        else if (show.IsFinished)
+                        {
+                            <button class="btn-state btn-past" disabled>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                Función finalizada
+                            </button>
+                        }
+                        else if (show.AvailableSeats > 0)
+                        {
+                            <a href="/Sales/Seats?showtimeId=@show.Id" class="btn-primary btn-card">
+                                Seleccionar asientos
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                            </a>
+                        }
+                        else
+                        {
+                            <button class="btn-disabled btn-card" disabled>Agotado</button>
+                        }
+                    </div>
                 }
             </div>
-        }
-    </div>
+        </div>
+    }
 }

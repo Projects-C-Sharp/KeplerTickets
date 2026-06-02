@@ -107,6 +107,45 @@ public class ShowtimeDto
         3 => "SoldOut",
         _ => "Unknown"
     };
+
+    /// <summary>
+    /// True si la función ya ocurrió o está en curso ahora mismo.
+    /// En curso = StartTime ya pasó pero EndTime aún no (o no hay EndTime conocida,
+    /// usamos duración típica de 3 h como fallback).
+    /// </summary>
+    public bool IsPastOrOngoing
+    {
+        get
+        {
+            var now = DateTime.Now;
+            // Si EndTime es válida la usamos; si no, StartTime + 3 h de gracia
+            var end = EndTime > StartTime ? EndTime : StartTime.AddHours(3);
+            return now >= StartTime && now < end   // en curso
+                || now >= end;                      // ya terminó
+        }
+    }
+
+    /// <summary>Sólo ya terminó (no en curso).</summary>
+    public bool IsFinished
+    {
+        get
+        {
+            var now = DateTime.Now;
+            var end = EndTime > StartTime ? EndTime : StartTime.AddHours(3);
+            return now >= end;
+        }
+    }
+
+    /// <summary>Función corriendo ahora mismo.</summary>
+    public bool IsOngoing
+    {
+        get
+        {
+            var now = DateTime.Now;
+            var end = EndTime > StartTime ? EndTime : StartTime.AddHours(3);
+            return now >= StartTime && now < end;
+        }
+    }
 }
 
 // ── Seats ─────────────────────────────────────────────────────────────────────

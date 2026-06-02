@@ -18,11 +18,13 @@ public class HomeController : Controller
         var showtimes = await _api.GetShowtimesAsync(eventId);
         var events    = await _api.GetEventsAsync();
 
-        // Solo mostrar funciones activas (Active=0) y agotadas (SoldOut=3)
-        // Excluir Cancelled=1 y Completed=2
+        // Mostrar: activas (0), agotadas (3) y completadas (2).
+        // Excluir solo Cancelled=1.
+        // Ordenar: primero las futuras (asc), luego las pasadas/en curso al final.
         showtimes = showtimes
-            .Where(s => s.Status == 0 || s.Status == 3)
-            .OrderBy(s => s.StartTime)
+            .Where(s => s.Status == 0 || s.Status == 2 || s.Status == 3)
+            .OrderBy(s => s.IsPastOrOngoing)   // false (futuras) primero
+            .ThenBy(s => s.StartTime)
             .ToList();
 
         return View(new ShowtimeSelectionViewModel

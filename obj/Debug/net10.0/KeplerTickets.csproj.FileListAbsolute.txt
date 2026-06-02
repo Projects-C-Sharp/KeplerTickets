@@ -23,7 +23,6 @@
 /home/cohorte6/Escritorio/c#/KeplerTickets/obj/Debug/net10.0/rjsmrazor.dswa.cache.json
 /home/cohorte6/Escritorio/c#/KeplerTickets/obj/Debug/net10.0/rjsmcshtml.dswa.cache.json
 /home/cohorte6/Escritorio/c#/KeplerTickets/obj/Debug/net10.0/scopedcss/bundle/KeplerTickets.styles.css
-/home/cohorte6/Escritorio/c#/KeplerTickets/obj/Debug/net10.0/compressed/7a16iwwqes-{0}-zzi2vw4cbb-zzi2vw4cbb.gz
 /home/cohorte6/Escritorio/c#/KeplerTickets/obj/Debug/net10.0/compressed/9b2cik5fx3-{0}-aidsy0d5iy-aidsy0d5iy.gz
 /home/cohorte6/Escritorio/c#/KeplerTickets/obj/Debug/net10.0/staticwebassets.build.json
 /home/cohorte6/Escritorio/c#/KeplerTickets/obj/Debug/net10.0/staticwebassets.build.json.cache
@@ -92,3 +91,4 @@
 /home/cohorte6/Escritorio/c#/access/KeplerTickets/obj/Debug/net10.0/KeplerTickets.pdb
 /home/cohorte6/Escritorio/c#/access/KeplerTickets/obj/Debug/net10.0/KeplerTickets.genruntimeconfig.cache
 /home/cohorte6/Escritorio/c#/access/KeplerTickets/obj/Debug/net10.0/ref/KeplerTickets.dll
+/home/cohorte6/Escritorio/c#/KeplerTickets/obj/Debug/net10.0/compressed/7a16iwwqes-{0}-yerczn7ll4-yerczn7ll4.gz

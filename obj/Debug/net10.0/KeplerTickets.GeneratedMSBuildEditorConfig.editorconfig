@@ -11,37 +11,37 @@ build_property.EnforceExtendedAnalyzerRules =
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = KeplerTickets
 build_property.RootNamespace = KeplerTickets
-build_property.ProjectDir = /home/cohorte6/Escritorio/c#/access/KeplerTickets/
+build_property.ProjectDir = /home/cohorte6/Escritorio/c#/KeplerTickets/
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 
 build_property.RazorLangVersion = 9.0
 build_property.SupportLocalizedComponentNames = 
 build_property.GenerateRazorMetadataSourceChecksumAttributes = 
-build_property.MSBuildProjectDirectory = /home/cohorte6/Escritorio/c#/access/KeplerTickets
+build_property.MSBuildProjectDirectory = /home/cohorte6/Escritorio/c#/KeplerTickets
 build_property._RazorSourceGeneratorDebug = 
 build_property.EffectiveAnalysisLevelStyle = 10.0
 build_property.EnableCodeStyleSeverity = 
 
-[/home/cohorte6/Escritorio/c\#/access/KeplerTickets/Views/Account/Login.cshtml]
+[/home/cohorte6/Escritorio/c\#/KeplerTickets/Views/Account/Login.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQWNjb3VudC9Mb2dpbi5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[/home/cohorte6/Escritorio/c\#/access/KeplerTickets/Views/Home/Index.cshtml]
+[/home/cohorte6/Escritorio/c\#/KeplerTickets/Views/Home/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvSG9tZS9JbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[/home/cohorte6/Escritorio/c\#/access/KeplerTickets/Views/Sales/Seats.cshtml]
+[/home/cohorte6/Escritorio/c\#/KeplerTickets/Views/Sales/Seats.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2FsZXMvU2VhdHMuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[/home/cohorte6/Escritorio/c\#/access/KeplerTickets/Views/Shared/_Layout.cshtml]
+[/home/cohorte6/Escritorio/c\#/KeplerTickets/Views/Shared/_Layout.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2hhcmVkL19MYXlvdXQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[/home/cohorte6/Escritorio/c\#/access/KeplerTickets/Views/_ViewImports.cshtml]
+[/home/cohorte6/Escritorio/c\#/KeplerTickets/Views/_ViewImports.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvX1ZpZXdJbXBvcnRzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[/home/cohorte6/Escritorio/c\#/access/KeplerTickets/Views/_ViewStart.cshtml]
+[/home/cohorte6/Escritorio/c\#/KeplerTickets/Views/_ViewStart.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvX1ZpZXdTdGFydC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 

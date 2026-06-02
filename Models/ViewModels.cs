@@ -19,6 +19,15 @@ public class ShowtimeSelectionViewModel
     public List<ShowtimeDto> Showtimes  { get; set; } = new();
     public List<EventDto>    Events     { get; set; } = new();
     public int?              EventFilter { get; set; }
+
+    /// <summary>
+    /// Funciones agrupadas por EventName, cada grupo ordenado por StartTime.
+    /// Grupos con funciones futuras primero; dentro de cada grupo, futuras antes que pasadas.
+    /// </summary>
+    public IEnumerable<IGrouping<string, ShowtimeDto>> GroupedByEvent =>
+        Showtimes
+            .GroupBy(s => s.EventName)
+            .OrderBy(g => g.All(s => s.IsPastOrOngoing));  // grupos con futuras primero
 }
 
 public class SeatSelectionViewModel
